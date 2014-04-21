@@ -1,0 +1,10 @@
+#allows the player to define their own region for the AutoFarm
+CustomRegions: false
+#Allous the AutoFarm to be "upgraded/region changed"
+isFarmSizeStatic: false
+#The static size of the farm if [FarmChangeSize] is false
+FarmStaticSize: '20 1 20'
+#The ammount of farms a player can own/be apart of
+FarmsPerPlayer: 4
+#The number of fams that can be on the server | 0 for unlimited
+TotalFarms: 0
