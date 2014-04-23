@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import org.bukkit.Location;
+import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 
 public class Farm {
 	private int level;
@@ -11,7 +13,9 @@ public class Farm {
 	private boolean customRegions;
 	
 	private Location farmLocation;
+	private Chest chest;
 	private ArrayList<UUID> owners;
+	private boolean[][] bounds;
 	
 	private final int MAX_LEVEL = 5;
 	private final int levelZeroRadius = 4;
@@ -31,9 +35,10 @@ public class Farm {
 		owners = null;
 	}
 
-	public Farm(boolean isStatic, Location farmLocation, ArrayList<UUID> owners) {
-		this.isStatic = isStatic;
+	public Farm(Location farmLocation, ArrayList<UUID> owners) {
+		this.isStatic = mainClass.getConfig().getBoolean("isFarmSizeStatic");
 		this.farmLocation = farmLocation;
+		this.chest = (Chest)farmLocation.getBlock().getState();
 		this.owners = owners;
 	}
 
@@ -43,6 +48,14 @@ public class Farm {
 		this.customRegions = customRegions;
 		this.farmLocation = farmLocation;
 		this.owners = owners;
+	}
+	
+	public boolean containsBlock(Block b){
+		switch(level){
+		case 0:
+			
+		}
+		return false;
 	}
 
 	public int getLevel() {
@@ -103,5 +116,15 @@ public class Farm {
 
 	public int getLevelFiveRadius() {
 		return levelFiveRadius;
+	}
+
+	public Chest getChest()
+	{
+		return chest;
+	}
+
+	public void setChest(Chest chest)
+	{
+		this.chest = chest;
 	}
 }
