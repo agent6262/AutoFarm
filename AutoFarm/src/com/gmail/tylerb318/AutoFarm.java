@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.gmail.tylerb318.events.BlockEventsListener;
+import com.gmail.tylerb318.events.PlayerEventListener;
 
 public class AutoFarm extends JavaPlugin
 {
@@ -22,6 +23,7 @@ public class AutoFarm extends JavaPlugin
 		this.loadConfig();
 		
 		this.getServer().getPluginManager().registerEvents(new BlockEventsListener(), this);
+		this.getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
 	}
 	
 	@Override

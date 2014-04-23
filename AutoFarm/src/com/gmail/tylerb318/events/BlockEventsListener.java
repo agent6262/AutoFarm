@@ -2,16 +2,15 @@ package com.gmail.tylerb318.events;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.CropState;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockGrowEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.inventory.ItemStack;
@@ -29,10 +28,16 @@ public class BlockEventsListener implements Listener{
 	public void onGrowEvent(BlockGrowEvent evt){//FIXME
 		if(evt.getBlock().getType().equals(Material.CROPS)){
 			if(((Crops)evt.getNewState().getData()).getState() == CropState.RIPE){
-				evt.getNewState().update();
-				for(ItemStack e : evt.getNewState().getBlock().getDrops())
-					mainClass.farmList.get(0).getChest().getInventory().addItem(e);
-				evt.getNewState().setType(Material.AIR);
+				for(Farm farm : mainClass.farmList){
+					if(farm.containsBlock(evt.getBlock())){
+						evt.getNewState().update();
+						for(ItemStack e : evt.getNewState().getBlock().getDrops())
+							farm.getChest().getInventory().addItem(e);
+						farm.getChest().getInventory().addItem(new ItemStack(Material.SEEDS, new Random().nextInt(3)));
+						evt.getNewState().setType(Material.AIR);
+						return;
+					}
+				}
 			}
 		}
 	}
@@ -58,13 +63,9 @@ public class BlockEventsListener implements Listener{
 				return;
 			}
 			evt.setLine(0, ChatColor.GREEN+"[Farm]");
+			mainClass.playerConfig.set(evt.getPlayer().getUniqueId().toString()+".TotalFarms", mainClass.playerConfig.getInt(evt.getPlayer().getUniqueId().toString()+".TotalFarms")+1);
+			mainClass.statusConfig.set("TotalFarms", mainClass.statusConfig.getInt("TotalFarms")+1);
 			mainClass.farmList.add(new Farm(tmpBlock.getLocation(), new ArrayList<UUID>(Arrays.asList(evt.getPlayer().getUniqueId()))));
 		}
-	}
-	
-	@EventHandler
-	public void onBlockBreak(BlockBreakEvent evt){
-		for(ItemStack e : evt.getBlock().getDrops())
-			Bukkit.getPlayer(UUID.fromString("685742b7-a893-47ca-815e-5f3106d16bab")).getInventory().addItem(e);
 	}
 }
