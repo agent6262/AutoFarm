@@ -17,13 +17,13 @@ public class Farm {//FIXME serialize farms
 	private ArrayList<UUID> owners;
 	private int[][] bounds;
 	
-	private final int MAX_LEVEL = 5;
-	private final int LEVEL_ZER0_RADIUS = 4;
-	private final int LEVEL_ONE_RADIUS = 10;
-	private final int LEVEL_TWO_RADIUS = 16;
-	private final int LEVEL_THREE_RADIUS = 20;
-	private final int LEVEL_FOUR_RADIUS = 26;
-	private final int LEVEL_FIVE_RADIUS = 30;
+	private static final int MAX_LEVEL = 5;
+	private static final int LEVEL_ZER0_RADIUS = 4;
+	private static final int LEVEL_ONE_RADIUS = 10;
+	private static final int LEVEL_TWO_RADIUS = 16;
+	private static final int LEVEL_THREE_RADIUS = 20;
+	private static final int LEVEL_FOUR_RADIUS = 26;
+	private static final int LEVEL_FIVE_RADIUS = 30;
 	
 	public static AutoFarm mainClass = AutoFarm.getPlugin(AutoFarm.class);
 	
@@ -55,9 +55,8 @@ public class Farm {//FIXME serialize farms
 	}
 	
 	public boolean containsBlock(Block b){
-		if(b.getX() <= bounds[0][0] && b.getX() >= bounds[0][2] &&
-			b.getZ() <= bounds[0][1] && b.getZ() >= bounds[1][1] &&
-			b.getY() == farmLocation.getY()) return true;
+		if(b.getX() <= bounds[0][0] && b.getX() >= bounds[1][2] &&
+			b.getZ() >= bounds[0][1] && b.getZ() <= bounds[1][3]) return true;
 		return false;
 	}
 
@@ -68,27 +67,27 @@ public class Farm {//FIXME serialize farms
 	public int getLevelValue(int level){
 		switch(level){
 		case 0:
-			return this.LEVEL_ZER0_RADIUS;
+			return Farm.LEVEL_ZER0_RADIUS;
 		case 1:
-			return this.LEVEL_ONE_RADIUS;
+			return Farm.LEVEL_ONE_RADIUS;
 		case 2:
-			return this.LEVEL_TWO_RADIUS;
+			return Farm.LEVEL_TWO_RADIUS;
 		case 3:
-			return this.LEVEL_THREE_RADIUS;
+			return Farm.LEVEL_THREE_RADIUS;
 		case 4:
-			return this.LEVEL_FOUR_RADIUS;
+			return Farm.LEVEL_FOUR_RADIUS;
 		case 5:
-			return this.LEVEL_FIVE_RADIUS;
+			return Farm.LEVEL_FIVE_RADIUS;
 		}
 		return -1;
 	}
 
 	public void setLevel(int level) {
 		this.level = level;
-		bounds[0][0] = this.farmLocation.getBlockX()-getLevelValue(getLevel()); bounds[0][1] = this.farmLocation.getBlockZ()+getLevelValue(getLevel());
-		bounds[0][2] = this.farmLocation.getBlockX()+getLevelValue(getLevel()); bounds[0][3] = this.farmLocation.getBlockZ()+getLevelValue(getLevel());
-		bounds[1][0] = this.farmLocation.getBlockX()-getLevelValue(getLevel()); bounds[1][0] = this.farmLocation.getBlockZ()-getLevelValue(getLevel());
-		bounds[1][2] = this.farmLocation.getBlockX()+getLevelValue(getLevel()); bounds[1][3] = this.farmLocation.getBlockZ()-getLevelValue(getLevel());
+		bounds[0][0] = this.farmLocation.getBlockX()+getLevelValue(getLevel()); bounds[0][1] = this.farmLocation.getBlockZ()-getLevelValue(getLevel());
+		bounds[0][2] = bounds[0][0]; bounds[0][3] = this.farmLocation.getBlockZ()+getLevelValue(getLevel());
+		bounds[1][0] = this.farmLocation.getBlockX()-getLevelValue(getLevel()); bounds[1][1] = this.farmLocation.getBlockZ()-getLevelValue(getLevel());
+		bounds[1][2] = bounds[1][0]; bounds[1][3] = this.farmLocation.getBlockZ()+getLevelValue(getLevel());
 		
 	}
 

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.CropState;
 import org.bukkit.Material;
@@ -33,7 +34,7 @@ public class BlockEventsListener implements Listener{
 						evt.getNewState().update();
 						for(ItemStack e : evt.getNewState().getBlock().getDrops())
 							farm.getChest().getInventory().addItem(e);
-						farm.getChest().getInventory().addItem(new ItemStack(Material.SEEDS, new Random().nextInt(3)));
+						farm.getChest().getInventory().addItem(new ItemStack(Material.SEEDS, new Random().nextInt(2)+1));
 						evt.getNewState().setType(Material.AIR);
 						return;
 					}
