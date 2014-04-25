@@ -4,9 +4,72 @@ author: Tyler Bucher
 main: com.gmail.tylerb318.AutoFarm
 
 commands:
-    farm:
+    autofarm:
         description: Top most level command that displays child commands
-        usage: /<command>
-    farminfo:
+        usage: /<command> | /<command> <farm name> [args]
+        aliases: [afarm, af]
+        permission: autofarm.commands.user.autofarm
+    autofarminfo:
         description: Displays global info or info about a specific farm
         usage: /<command> | /<command> <farm name>
+        aliases: [afarminfo, afinfo, afi]
+        permission: autofarm.commands.user.autofarminfo
+    autofarmreload:
+        description: Reloads the plugin AutoFarm
+        usage: /<command>
+        aliases: [afarmreload, afreload, afr]
+        permission: autofarm.commands.reload
+        
+permissions:
+    autofarm.*:
+        description: Gives acces to all AutoFarm permissions
+        children:
+            autofarm.commands.*: true
+            autofarm.create: true
+        default: op
+    autofarm.commands.*:
+        description: Gives acces to all AutoFarm commands
+        children:
+            autofarm.commands.user.*: true
+            autofarm.commands.reload: true
+    autofarm.commands.user.*:
+        description: Gives access to all AutoFarm user commands
+        children:
+            autofarm.commands.user.autofarm: true
+            autofarm.commands.user.autofarminfo: true
+            autofarm.commands.user.farminfo: true
+            autofarm.commands.user.setname: true
+            autofarm.commands.user.addowner: true
+            autofarm.commands.user.upgrade: true
+            autofarm.commands.user.disband: true
+            autofarm.commands.user.leave: true
+        default: true
+    autofarm.commands.user.autofarm:
+        description: Allows you to use the basic AutoFarm command.
+        default: true
+    autofarm.commands.user.autofarminfo:
+        description: Allows you to get global statistics about AutoFarm
+        default: true
+    autofarm.commands.user.farminfo:
+        description: Allows you to get stats about a specific farm
+        default: true
+    autofarm.commands.user.setname:
+        description: Allows you to set the name of a specific farm
+        default: true
+    autofarm.commands.user.addowner:
+        description: Allows you to add an owner to a specific farm
+        default: true
+    autofarm.commands.user.upgrade:
+        description: Allows you to upgrade a fram's level
+        default: true
+    autofarm.commands.user.disband:
+        description: Allows you to disband/delete a farm
+        default: true
+    autofarm.commands.user.leave:
+        description: Allows you to leave a specific farm
+    autofarm.commands.reload:
+        description: Allows you to use the reload command.
+        default: op
+    autofarm.create:
+        description: Allows you to create an AutoFarm.
+        default: true

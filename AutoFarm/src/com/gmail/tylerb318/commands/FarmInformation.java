@@ -20,26 +20,28 @@ public class FarmInformation implements CommandExecutor
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
 		//Global farm info/statistics command
-		if(cmd.getName().equalsIgnoreCase("farminfo") && args.length == 0){
+		if(cmd.getName().equalsIgnoreCase("autofarminfo") && args.length == 0){
 			switch(args.length){
 			case 0:
 				sender.sendMessage(ChatColor.GREEN+"Total Farms: "+mainClass.statusConfig.getInt("TotalFarms"));
 				return true;
 			case 1:
-				for(Farm farm: mainClass.farmList){
-					if(farm.getName().equals(args[0])){
-						ArrayList<String> tmpOwners = new ArrayList<String>();
-						for(UUID id : farm.getOwners()){
-							tmpOwners.add(Bukkit.getPlayer(id).getName());
+				if(sender.hasPermission("autofarm.commands.user.farminfo")){
+					for(Farm farm: mainClass.farmList){
+						if(farm.getName().equals(args[0])){
+							ArrayList<String> tmpOwners = new ArrayList<String>();
+							for(UUID id : farm.getOwners()){
+								tmpOwners.add(Bukkit.getPlayer(id).getName());
+							}
+							sender.sendMessage(ChatColor.GOLD+"===== "+args[0]+" ====="+"\n"+
+													ChatColor.GREEN+"Owners: "+ChatColor.WHITE+tmpOwners.toString()+"\n"+
+													ChatColor.GREEN+"Level: "+ChatColor.WHITE+farm.getLevel()+"\n");
+							return true;
 						}
-						sender.sendMessage(ChatColor.GOLD+"===== "+args[0]+" ====="+"\n"+
-												ChatColor.GREEN+"Owners: "+ChatColor.WHITE+tmpOwners.toString()+"\n"+
-												ChatColor.GREEN+"Level: "+ChatColor.WHITE+farm.getLevel()+"\n");
-						return true;
 					}
+					sender.sendMessage(ChatColor.RED+"The farm ["+args[0]+"] does not exist");
+					return true;
 				}
-				sender.sendMessage(ChatColor.RED+"The farm ["+args[0]+"] does not exist");
-				return true;
 			}
 		}
 		return false;

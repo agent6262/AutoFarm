@@ -19,6 +19,7 @@ import org.bukkit.material.Sign;
 
 import com.gmail.tylerb318.AutoFarm;
 import com.gmail.tylerb318.Farm;
+import com.gmail.tylerb318.util.FarmSerialization;
 
 public class BlockEventsListener implements Listener{
 	
@@ -50,39 +51,42 @@ public class BlockEventsListener implements Listener{
 	@EventHandler
 	public void onSignChange(SignChangeEvent evt){
 		if(evt.getLine(0).equals("[Farm]")){
-			if(evt.getLine(1).equals("")){
-				evt.setLine(0, ChatColor.RED+"[Farm]");
-				evt.setLine(1, ChatColor.RED+"<Farm Name>");
-				evt.getPlayer().sendMessage(ChatColor.RED+"You must have a farm name");
-				return;
-			}
-			if(mainClass.playerConfig.getInt(evt.getPlayer().getUniqueId()+".TotalFarms") >= mainClass.getConfig().getInt("FarmsPerPlayer")){
-				evt.setLine(0, ChatColor.RED+"[Farm]");
-				evt.getPlayer().sendMessage(ChatColor.RED+"You have to may farms");
-				return;
-			}
-			if(mainClass.getConfig().getInt("TotalFarms") != 0){
-				if(!(mainClass.statusConfig.getInt("TotalFarms") < mainClass.getConfig().getInt("TotalFarms"))){
-					evt.getPlayer().sendMessage(ChatColor.RED+"There are to many farms in the world");
+			if(evt.getPlayer().hasPermission("autofarm.create")){
+				if(evt.getLine(1).equals("")){
+					evt.setLine(0, ChatColor.RED+"[Farm]");
+					evt.setLine(1, ChatColor.RED+"<Farm Name>");
+					evt.getPlayer().sendMessage(ChatColor.RED+"You must have a farm name");
 					return;
 				}
-			}
-			Sign sign = (Sign)evt.getBlock().getState().getData();
-			Block tmpBlock = evt.getBlock().getRelative(sign.getAttachedFace());
-			if(tmpBlock.getType() != Material.CHEST){
-				evt.setLine(0, ChatColor.RED+"[Farm]");
-				return;
-			}
-			for(Farm farm : mainClass.farmList){
-				if(farm.getName().equals(evt.getLine(1))){
-					evt.getPlayer().sendMessage(ChatColor.RED+"The farm ["+evt.getLine(1)+"] already exists");
+				if(mainClass.playerConfig.getInt(evt.getPlayer().getUniqueId()+".TotalFarms") >= mainClass.getConfig().getInt("FarmsPerPlayer")){
+					evt.setLine(0, ChatColor.RED+"[Farm]");
+					evt.getPlayer().sendMessage(ChatColor.RED+"You have to may farms");
 					return;
 				}
+				if(mainClass.getConfig().getInt("TotalFarms") != 0){
+					if(!(mainClass.statusConfig.getInt("TotalFarms") < mainClass.getConfig().getInt("TotalFarms"))){
+						evt.getPlayer().sendMessage(ChatColor.RED+"There are to many farms in the world");
+						return;
+					}
+				}
+				Sign sign = (Sign)evt.getBlock().getState().getData();
+				Block tmpBlock = evt.getBlock().getRelative(sign.getAttachedFace());
+				if(tmpBlock.getType() != Material.CHEST){
+					evt.setLine(0, ChatColor.RED+"[Farm]");
+					return;
+				}
+				for(Farm farm : mainClass.farmList){
+					if(farm.getName().equals(evt.getLine(1))){
+						evt.getPlayer().sendMessage(ChatColor.RED+"The farm ["+evt.getLine(1)+"] already exists");
+						return;
+					}
+				}
+				evt.setLine(0, ChatColor.GREEN+"[Farm]");
+				mainClass.playerConfig.set(evt.getPlayer().getUniqueId().toString()+".TotalFarms", mainClass.playerConfig.getInt(evt.getPlayer().getUniqueId().toString()+".TotalFarms")+1);
+				mainClass.statusConfig.set("TotalFarms", mainClass.statusConfig.getInt("TotalFarms")+1);
+				mainClass.farmList.add(new Farm(evt.getLine(1), tmpBlock.getLocation(), new ArrayList<UUID>(Arrays.asList(evt.getPlayer().getUniqueId()))));
+				FarmSerialization.serializeFarm(mainClass.farmList.get(mainClass.farmList.size()-1));
 			}
-			evt.setLine(0, ChatColor.GREEN+"[Farm]");
-			mainClass.playerConfig.set(evt.getPlayer().getUniqueId().toString()+".TotalFarms", mainClass.playerConfig.getInt(evt.getPlayer().getUniqueId().toString()+".TotalFarms")+1);
-			mainClass.statusConfig.set("TotalFarms", mainClass.statusConfig.getInt("TotalFarms")+1);
-			mainClass.farmList.add(new Farm(evt.getLine(1), tmpBlock.getLocation(), new ArrayList<UUID>(Arrays.asList(evt.getPlayer().getUniqueId()))));
 		}
 	}
 }

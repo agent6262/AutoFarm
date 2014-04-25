@@ -10,8 +10,8 @@ FarmsPerPlayer: 4
 TotalFarms: 0
 
 FarmUpgardes:
-    LEVEL_ONE: IRON
-    LEVEL_TWO: GOLD
-    LEVEL_THREE: LAPIS
-    LEVEL_FOUR: GOLD
-    LEVEL_FIVE: EMERALD
+    1: IRON
+    2: GOLD
+    3: LAPIS
+    4: GOLD
+    5: EMERALD

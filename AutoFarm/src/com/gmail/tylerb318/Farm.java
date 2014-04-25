@@ -10,7 +10,6 @@ import org.bukkit.block.Chest;
 public class Farm {//FIXME serialize farms
 	private int level;
 	private boolean isStatic;
-	private boolean customRegions;
 	private String name;
 	
 	private Location farmLocation;
@@ -31,7 +30,6 @@ public class Farm {//FIXME serialize farms
 	@Deprecated
 	public Farm(){
 		isStatic = mainClass.getConfig().getBoolean("isFarmSizeStatic");
-		customRegions = mainClass.getConfig().getBoolean("CustomRegions");
 		farmLocation = new Location(mainClass.getServer().getWorld(mainClass.getServer().getWorlds().get(0).getUID()), 0d, 65d, 0d);
 		owners = null;
 		bounds = new int[2][4];
@@ -49,12 +47,11 @@ public class Farm {//FIXME serialize farms
 		setLevel(0);
 	}
 
-	public Farm(String name, int level, boolean isStatic, boolean customRegions, Location farmLocation, ArrayList<UUID> owners) {
+	public Farm(String name, int level, boolean isStatic, Location farmLocation, ArrayList<UUID> owners) {
 		bounds = new int[2][4];
 		setLevel(level);
 		this.name = name;
 		this.isStatic = isStatic;
-		this.customRegions = customRegions;
 		this.farmLocation = farmLocation;
 		this.owners = owners;
 	}
@@ -118,10 +115,6 @@ public class Farm {//FIXME serialize farms
 
 	public boolean isStatic() {
 		return isStatic;
-	}
-
-	public boolean isCustomRegions() {
-		return customRegions;
 	}
 
 	public static int getMAX_LEVEL() {

@@ -1,5 +1,6 @@
 package com.gmail.tylerb318.commands;
 
+import java.io.File;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -21,7 +22,7 @@ public class GeneralInfoCommand implements CommandExecutor
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args)
 	{
-		if(cmd.getName().equalsIgnoreCase("farm")){
+		if(cmd.getName().equalsIgnoreCase("autofarm")){
 			if(args.length == 0){
 				sender.sendMessage(ChatColor.GOLD+"AutoFarm Commands:\n"+ChatColor.WHITE+
 						"/farm: displays global AutoFarm commands\n"+
@@ -36,9 +37,9 @@ public class GeneralInfoCommand implements CommandExecutor
 					for(Farm farm : mainClass.farmList){
 						if(farm.getName().equals(args[0])){
 							if(farm.getOwners().contains(player.getUniqueId())){
-								if(args.length == 2){
-									switch(args[1]){
-									case "setname":
+								switch(args[1]){
+								case "setname":
+									if(sender.hasPermission("autofarm.commands.user.setname")){
 										if(args.length == 3){
 											farm.setName(args[2]);
 											sender.sendMessage(ChatColor.GREEN+"Farm name changed");
@@ -46,7 +47,10 @@ public class GeneralInfoCommand implements CommandExecutor
 										}
 										sender.sendMessage(ChatColor.RED+"To many or to few arguments");
 										return true;
-									case "addowner"://FIXME
+									}
+									break;
+								case "addowner":
+									if(sender.hasPermission("autofarm.commands.user.addowner")){
 										if(args.length == 3){
 											for(OfflinePlayer offPlayer : Bukkit.getOfflinePlayers()){
 												if(offPlayer.getName().equals(args[2])){
@@ -65,32 +69,43 @@ public class GeneralInfoCommand implements CommandExecutor
 										}
 										sender.sendMessage(ChatColor.RED+"To many or to few arguments");
 										return true;
-									case "upgrade":
+									}
+									break;
+								case "upgrade":
+									if(sender.hasPermission("autofarm.commands.user.upgrade")){
 										if(farm.getLevel() < Farm.getMAX_LEVEL()){
 											if(Bukkit.getWorld(Bukkit.getWorlds().get(0).getUID()).getBlockAt(farm.getFarmLocation().getBlockX(),
 													farm.getFarmLocation().getBlockY()-1,
-													farm.getFarmLocation().getBlockZ()).getType().equals(Material.AIR)){
-												
+													farm.getFarmLocation().getBlockZ()).getType().equals(Material.getMaterial(mainClass.config.getString("FarmUpgardes."+String.valueOf(farm.getLevel()+1))))){
+												farm.setLevel(farm.getLevel()+1);
 											}
+											sender.sendMessage(ChatColor.RED+"You need an ["+mainClass.config.getString("FarmUpgardes."+String.valueOf(farm.getLevel()+1))+"] block under the chest to upgrade the farm");
+											return true;
 										}
 										sender.sendMessage(ChatColor.RED+"This farm is already at max level");
 										return true;
-									case "disband":
+									}
+									break;
+								case "disband":
+									if(sender.hasPermission("autofarm.commands.user.disband")){
 										for(UUID uuid : farm.getOwners()){
 											mainClass.playerConfig.set(uuid.toString()+".TotalFarms", mainClass.playerConfig.getInt(uuid.toString()+".TotalFarms")-1);
 										}
+										new File(mainClass.getDataFolder()+"Serialized Farms", farm.getName()+".farm.ser").delete();
 										mainClass.farmList.remove(farm);
 										sender.sendMessage(ChatColor.GREEN+"Farm deleted");
 										return true;
-									case "leave":	
+									}
+									break;
+								case "leave":
+									if(sender.hasPermission("autofarm.commands.user.leave")){
 										mainClass.playerConfig.set(player.getUniqueId().toString()+".TotalFarms", mainClass.playerConfig.getInt(player.getUniqueId().toString()+".TotalFarms")-1);
 										farm.getOwners().remove(player.getUniqueId());
 										sender.sendMessage(ChatColor.GREEN+"You have left the farm ["+farm.getName()+"]");
 										return true;
 									}
+									break;
 								}
-								sender.sendMessage(ChatColor.RED+"To few arguments");
-								return true;
 							}
 							sender.sendMessage(ChatColor.RED+"You are not an owner of this farm");
 							return true;
@@ -102,6 +117,8 @@ public class GeneralInfoCommand implements CommandExecutor
 				sender.sendMessage("You have to be a player to use this command");
 				return true;
 			}
+			sender.sendMessage(ChatColor.RED+"To few arguments");
+			return true;
 		}
 		return false;
 	}
