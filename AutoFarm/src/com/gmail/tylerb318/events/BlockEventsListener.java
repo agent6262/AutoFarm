@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.CropState;
 import org.bukkit.Material;
@@ -35,7 +34,12 @@ public class BlockEventsListener implements Listener{
 						for(ItemStack e : evt.getNewState().getBlock().getDrops())
 							farm.getChest().getInventory().addItem(e);
 						farm.getChest().getInventory().addItem(new ItemStack(Material.SEEDS, new Random().nextInt(2)+1));
-						evt.getNewState().setType(Material.AIR);
+						if(farm.getChest().getInventory().contains(Material.SEEDS)){
+							farm.getChest().getInventory().getItem(farm.getChest().getInventory().first(Material.SEEDS)).setAmount(
+								farm.getChest().getInventory().getItem(farm.getChest().getInventory().first(Material.SEEDS)).getAmount()-1);
+							((Crops)evt.getNewState().getData()).setState(CropState.GERMINATED);
+						}else
+							evt.getNewState().setType(Material.AIR);
 						return;
 					}
 				}
@@ -46,6 +50,12 @@ public class BlockEventsListener implements Listener{
 	@EventHandler
 	public void onSignChange(SignChangeEvent evt){
 		if(evt.getLine(0).equals("[Farm]")){
+			if(evt.getLine(1).equals("")){
+				evt.setLine(0, ChatColor.RED+"[Farm]");
+				evt.setLine(1, ChatColor.RED+"<Farm Name>");
+				evt.getPlayer().sendMessage(ChatColor.RED+"You must have a farm name");
+				return;
+			}
 			if(mainClass.playerConfig.getInt(evt.getPlayer().getUniqueId()+".TotalFarms") >= mainClass.getConfig().getInt("FarmsPerPlayer")){
 				evt.setLine(0, ChatColor.RED+"[Farm]");
 				evt.getPlayer().sendMessage(ChatColor.RED+"You have to may farms");
@@ -63,10 +73,16 @@ public class BlockEventsListener implements Listener{
 				evt.setLine(0, ChatColor.RED+"[Farm]");
 				return;
 			}
+			for(Farm farm : mainClass.farmList){
+				if(farm.getName().equals(evt.getLine(1))){
+					evt.getPlayer().sendMessage(ChatColor.RED+"The farm ["+evt.getLine(1)+"] already exists");
+					return;
+				}
+			}
 			evt.setLine(0, ChatColor.GREEN+"[Farm]");
 			mainClass.playerConfig.set(evt.getPlayer().getUniqueId().toString()+".TotalFarms", mainClass.playerConfig.getInt(evt.getPlayer().getUniqueId().toString()+".TotalFarms")+1);
 			mainClass.statusConfig.set("TotalFarms", mainClass.statusConfig.getInt("TotalFarms")+1);
-			mainClass.farmList.add(new Farm(tmpBlock.getLocation(), new ArrayList<UUID>(Arrays.asList(evt.getPlayer().getUniqueId()))));
+			mainClass.farmList.add(new Farm(evt.getLine(1), tmpBlock.getLocation(), new ArrayList<UUID>(Arrays.asList(evt.getPlayer().getUniqueId()))));
 		}
 	}
 }

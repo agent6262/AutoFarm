@@ -2,3 +2,11 @@ name: AutoFarm
 version: 0.0.1
 author: Tyler Bucher
 main: com.gmail.tylerb318.AutoFarm
+
+commands:
+    farm:
+        description: Top most level command that displays child commands
+        usage: /<command>
+    farminfo:
+        description: Displays global info or info about a specific farm
+        usage: /<command> | /<command> <farm name>

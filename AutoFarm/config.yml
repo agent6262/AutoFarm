@@ -8,3 +8,10 @@ FarmStaticSize: '20 1 20'
 FarmsPerPlayer: 4
 #The number of fams that can be on the server | 0 for unlimited
 TotalFarms: 0
+
+FarmUpgardes:
+    LEVEL_ONE: IRON
+    LEVEL_TWO: GOLD
+    LEVEL_THREE: LAPIS
+    LEVEL_FOUR: GOLD
+    LEVEL_FIVE: EMERALD

@@ -11,6 +11,7 @@ public class Farm {//FIXME serialize farms
 	private int level;
 	private boolean isStatic;
 	private boolean customRegions;
+	private String name;
 	
 	private Location farmLocation;
 	private Chest chest;
@@ -27,17 +28,20 @@ public class Farm {//FIXME serialize farms
 	
 	public static AutoFarm mainClass = AutoFarm.getPlugin(AutoFarm.class);
 	
+	@Deprecated
 	public Farm(){
 		isStatic = mainClass.getConfig().getBoolean("isFarmSizeStatic");
 		customRegions = mainClass.getConfig().getBoolean("CustomRegions");
 		farmLocation = new Location(mainClass.getServer().getWorld(mainClass.getServer().getWorlds().get(0).getUID()), 0d, 65d, 0d);
 		owners = null;
 		bounds = new int[2][4];
+		name = "";
 		setLevel(0);
 	}
 
-	public Farm(Location farmLocation, ArrayList<UUID> owners) {
+	public Farm(String name, Location farmLocation, ArrayList<UUID> owners) {
 		this.isStatic = mainClass.getConfig().getBoolean("isFarmSizeStatic");
+		this.name = name;
 		this.farmLocation = farmLocation;
 		this.chest = (Chest)farmLocation.getBlock().getState();
 		this.owners = owners;
@@ -45,13 +49,18 @@ public class Farm {//FIXME serialize farms
 		setLevel(0);
 	}
 
-	public Farm(int level, boolean isStatic, boolean customRegions, Location farmLocation, ArrayList<UUID> owners) {
+	public Farm(String name, int level, boolean isStatic, boolean customRegions, Location farmLocation, ArrayList<UUID> owners) {
 		bounds = new int[2][4];
 		setLevel(level);
+		this.name = name;
 		this.isStatic = isStatic;
 		this.customRegions = customRegions;
 		this.farmLocation = farmLocation;
 		this.owners = owners;
+	}
+	
+	public void addOwner(UUID owner){
+		this.owners.add(owner);
 	}
 	
 	public boolean containsBlock(Block b){
@@ -115,7 +124,7 @@ public class Farm {//FIXME serialize farms
 		return customRegions;
 	}
 
-	public int getMAX_LEVEL() {
+	public static int getMAX_LEVEL() {
 		return MAX_LEVEL;
 	}
 
@@ -127,5 +136,15 @@ public class Farm {//FIXME serialize farms
 	public void setChest(Chest chest)
 	{
 		this.chest = chest;
+	}
+
+	public String getName()
+	{
+		return name;
+	}
+
+	public void setName(String name)
+	{
+		this.name = name;
 	}
 }

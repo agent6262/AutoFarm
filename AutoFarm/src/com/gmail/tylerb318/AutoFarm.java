@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.gmail.tylerb318.commands.FarmInformation;
+import com.gmail.tylerb318.commands.GeneralInfoCommand;
 import com.gmail.tylerb318.events.BlockEventsListener;
 import com.gmail.tylerb318.events.PlayerEventListener;
 
@@ -24,6 +26,17 @@ public class AutoFarm extends JavaPlugin
 		
 		this.getServer().getPluginManager().registerEvents(new BlockEventsListener(), this);
 		this.getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
+		
+		this.getCommand("farm").setExecutor(new GeneralInfoCommand());
+		this.getCommand("farminfo").setExecutor(new FarmInformation());
+		
+		this.getServer().getScheduler().scheduleSyncRepeatingTask(this,
+			new Runnable(){
+				@Override
+				public void run(){
+					
+				}
+		}, 1200L, 2400L);
 	}
 	
 	@Override
