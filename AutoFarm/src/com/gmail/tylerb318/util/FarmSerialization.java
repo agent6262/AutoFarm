@@ -24,7 +24,7 @@ public class FarmSerialization {
 
 	public static void serializeFarm(Farm farm){
 		try{
-			OutputStream file = new FileOutputStream(new File(mainClass.getDataFolder()+"Serialized Farms", farm.getName()+".farm.ser"));
+			OutputStream file = new FileOutputStream(new File(mainClass.getDataFolder()+"\\Serialized Farms", farm.getUuid().toString()+".farm.ser"));
 			OutputStream buffer = new BufferedOutputStream(file);
 			ObjectOutput output = new ObjectOutputStream(buffer);
 			try{
@@ -41,7 +41,7 @@ public class FarmSerialization {
 	
 	public static Farm deSerializeFarm(String farmName){
 		try{
-			InputStream file = new FileInputStream(new File(mainClass.getDataFolder()+"Serialized Farms", farmName));
+			InputStream file = new FileInputStream(new File(mainClass.getDataFolder()+"\\Serialized Farms", farmName));
 			InputStream buffer = new BufferedInputStream(file);
 			ObjectInput input = new ObjectInputStream (buffer);
 			try{
@@ -59,10 +59,10 @@ public class FarmSerialization {
 	
 	public static ArrayList<Farm> deSerializeFarms(){
 		ArrayList<Farm> tmpFarmList = new ArrayList<Farm>();
-		for(String fileName : mainClass.getDataFolder().list())
+		for(String fileName : new File(mainClass.getDataFolder(), "\\Serialized Farms").list())
 		{
 			try{
-				InputStream file = new FileInputStream(new File(mainClass.getDataFolder()+"Serialized Farms", fileName));
+				InputStream file = new FileInputStream(new File(mainClass.getDataFolder()+"\\Serialized Farms", fileName));
 				InputStream buffer = new BufferedInputStream(file);
 				ObjectInput input = new ObjectInputStream (buffer);
 				try{

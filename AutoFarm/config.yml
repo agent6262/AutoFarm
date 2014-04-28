@@ -9,9 +9,9 @@ FarmsPerPlayer: 4
 #The number of fams that can be on the server | 0 for unlimited
 TotalFarms: 0
 
-FarmUpgardes:
-    1: IRON
-    2: GOLD
-    3: LAPIS
-    4: GOLD
-    5: EMERALD
+FarmUpgrades:
+    1: IRON_BLOCK
+    2: GOLD_BLOCK
+    3: LAPIS_BLOCK
+    4: DIAMOND_BLOCK
+    5: EMERALD_BLOCK

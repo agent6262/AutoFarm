@@ -1,20 +1,26 @@
 package com.gmail.tylerb318;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
+import org.bukkit.block.Sign;
 
-public class Farm {//FIXME serialize farms
+public class Farm implements Serializable{
+	private static final long serialVersionUID = 3L;
+	private final UUID uuid = UUID.randomUUID();
+	
 	private int level;
-	private boolean isStatic;
 	private String name;
 	
-	private Location farmLocation;
-	private Chest chest;
+	private UUID world;
 	private ArrayList<UUID> owners;
+	private int[] chestLocation;
+	private int[] signLocation;
 	private int[][] bounds;
 	
 	private static final int MAX_LEVEL = 5;
@@ -25,35 +31,20 @@ public class Farm {//FIXME serialize farms
 	private static final int LEVEL_FOUR_RADIUS = 26;
 	private static final int LEVEL_FIVE_RADIUS = 30;
 	
-	public static AutoFarm mainClass = AutoFarm.getPlugin(AutoFarm.class);
-	
-	@Deprecated
-	public Farm(){
-		isStatic = mainClass.getConfig().getBoolean("isFarmSizeStatic");
-		farmLocation = new Location(mainClass.getServer().getWorld(mainClass.getServer().getWorlds().get(0).getUID()), 0d, 65d, 0d);
-		owners = null;
-		bounds = new int[2][4];
-		name = "";
-		setLevel(0);
-	}
+	public static transient AutoFarm mainClass = AutoFarm.getPlugin(AutoFarm.class);
 
-	public Farm(String name, Location farmLocation, ArrayList<UUID> owners) {
-		this.isStatic = mainClass.getConfig().getBoolean("isFarmSizeStatic");
-		this.name = name;
-		this.farmLocation = farmLocation;
-		this.chest = (Chest)farmLocation.getBlock().getState();
-		this.owners = owners;
+	public Farm(UUID world, String name, Location farmLocation, Location signLocation, ArrayList<UUID> owners) {
+		this.world = world;
+		this.setName(name);
+		this.setOwners(owners);
+		
+		this.chestLocation = new int[3];
+		this.setFarmLocation(farmLocation.getBlockX(), farmLocation.getBlockY(), farmLocation.getBlockZ());
+		
+		this.signLocation = new int[3];
+		this.setSignLocation(signLocation.getBlockX(), signLocation.getBlockY(), signLocation.getBlockZ());
 		bounds = new int[2][4];
 		setLevel(0);
-	}
-
-	public Farm(String name, int level, boolean isStatic, Location farmLocation, ArrayList<UUID> owners) {
-		bounds = new int[2][4];
-		setLevel(level);
-		this.name = name;
-		this.isStatic = isStatic;
-		this.farmLocation = farmLocation;
-		this.owners = owners;
 	}
 	
 	public void addOwner(UUID owner){
@@ -70,7 +61,7 @@ public class Farm {//FIXME serialize farms
 		return level;
 	}
 	
-	public int getLevelValue(int level){
+	private int getLevelValue(int level){
 		switch(level){
 		case 0:
 			return Farm.LEVEL_ZER0_RADIUS;
@@ -90,19 +81,33 @@ public class Farm {//FIXME serialize farms
 
 	public void setLevel(int level) {
 		this.level = level;
-		bounds[0][0] = this.farmLocation.getBlockX()+getLevelValue(getLevel()); bounds[0][1] = this.farmLocation.getBlockZ()-getLevelValue(getLevel());
-		bounds[0][2] = bounds[0][0]; bounds[0][3] = this.farmLocation.getBlockZ()+getLevelValue(getLevel());
-		bounds[1][0] = this.farmLocation.getBlockX()-getLevelValue(getLevel()); bounds[1][1] = this.farmLocation.getBlockZ()-getLevelValue(getLevel());
-		bounds[1][2] = bounds[1][0]; bounds[1][3] = this.farmLocation.getBlockZ()+getLevelValue(getLevel());
+		bounds[0][0] = this.chestLocation[0]+getLevelValue(getLevel()); bounds[0][1] = this.chestLocation[2]-getLevelValue(getLevel());
+		bounds[0][2] = bounds[0][0]; bounds[0][3] = this.chestLocation[2]+getLevelValue(getLevel());
+		bounds[1][0] = this.chestLocation[0]-getLevelValue(getLevel()); bounds[1][1] = this.chestLocation[2]-getLevelValue(getLevel());
+		bounds[1][2] = bounds[1][0]; bounds[1][3] = this.chestLocation[2]+getLevelValue(getLevel());
 		
 	}
 
-	public Location getFarmLocation() {
-		return farmLocation;
+	public int[] getChestLocation()
+	{
+		return chestLocation;
 	}
 
-	public void setFarmLocation(Location farmLocation) {
-		this.farmLocation = farmLocation;
+	public int[] getSignLocation()
+	{
+		return signLocation;
+	}
+
+	public void setFarmLocation(int x, int y, int z) {
+		this.chestLocation[0] = x;
+		this.chestLocation[1] = y;
+		this.chestLocation[2] = z;
+	}
+	
+	public void setSignLocation(int x, int y, int z){
+		this.signLocation[0] = x;
+		this.signLocation[1] = y;
+		this.signLocation[2] = z;
 	}
 
 	public ArrayList<UUID> getOwners() {
@@ -113,22 +118,21 @@ public class Farm {//FIXME serialize farms
 		this.owners = owners;
 	}
 
-	public boolean isStatic() {
-		return isStatic;
-	}
-
 	public static int getMAX_LEVEL() {
 		return MAX_LEVEL;
 	}
 
-	public Chest getChest()
-	{
-		return chest;
+	public Chest getChest(){
+		return (Chest)Bukkit.getWorld(world).getBlockAt(this.chestLocation[0], this.chestLocation[1], this.chestLocation[2]).getState();
+	}
+	
+	public Sign getSign(){
+		return (Sign)Bukkit.getWorld(world).getBlockAt(this.signLocation[0], this.signLocation[1], this.signLocation[2]).getState();
 	}
 
 	public void setChest(Chest chest)
 	{
-		this.chest = chest;
+		this.setFarmLocation(chest.getX(), chest.getY(), chest.getZ());
 	}
 
 	public String getName()
@@ -139,5 +143,15 @@ public class Farm {//FIXME serialize farms
 	public void setName(String name)
 	{
 		this.name = name;
+	}
+
+	public UUID getWorld()
+	{
+		return world;
+	}
+
+	public UUID getUuid()
+	{
+		return uuid;
 	}
 }

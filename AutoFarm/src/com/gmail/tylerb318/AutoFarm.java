@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -27,7 +28,7 @@ public class AutoFarm extends JavaPlugin
 	public void onEnable(){
 		this.loadConfig();
 		
-		FarmSerialization.deSerializeFarms();
+		this.farmList = FarmSerialization.deSerializeFarms();
 		
 		this.getServer().getPluginManager().registerEvents(new BlockEventsListener(), this);
 		this.getServer().getPluginManager().registerEvents(new PlayerEventListener(), this);
@@ -76,6 +77,8 @@ public class AutoFarm extends JavaPlugin
 			File statusFile = new File(this.getDataFolder(), "FarmStatus.yml");
 			statusConfig = YamlConfiguration.loadConfiguration(statusFile);
 			if(!statusFile.exists()){
+				statusConfig.load(this.getResource("FarmStatus.yml"));
+				statusConfig.options().copyDefaults(true);
 				statusConfig.save(statusFile);
 			}
 			//Make the [Serialized Farms] folder
@@ -83,7 +86,7 @@ public class AutoFarm extends JavaPlugin
 			if(!farmDir.exists()){
 				farmDir.mkdir();
 			}
-		}catch(IOException e){
+		}catch(IOException | InvalidConfigurationException e){
 			this.getLogger().severe("Some or all the configuartions could not be loaded");
 		}
 	}

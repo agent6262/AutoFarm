@@ -84,8 +84,9 @@ public class BlockEventsListener implements Listener{
 				evt.setLine(0, ChatColor.GREEN+"[Farm]");
 				mainClass.playerConfig.set(evt.getPlayer().getUniqueId().toString()+".TotalFarms", mainClass.playerConfig.getInt(evt.getPlayer().getUniqueId().toString()+".TotalFarms")+1);
 				mainClass.statusConfig.set("TotalFarms", mainClass.statusConfig.getInt("TotalFarms")+1);
-				mainClass.farmList.add(new Farm(evt.getLine(1), tmpBlock.getLocation(), new ArrayList<UUID>(Arrays.asList(evt.getPlayer().getUniqueId()))));
-				FarmSerialization.serializeFarm(mainClass.farmList.get(mainClass.farmList.size()-1));
+				Farm tmpFarm = new Farm(evt.getBlock().getWorld().getUID(), evt.getLine(1), tmpBlock.getLocation(), evt.getBlock().getLocation(), new ArrayList<UUID>(Arrays.asList(evt.getPlayer().getUniqueId())));
+				mainClass.farmList.add(tmpFarm);
+				FarmSerialization.serializeFarm(tmpFarm);
 			}
 		}
 	}

@@ -38,10 +38,12 @@ public class GeneralInfoCommand implements CommandExecutor
 						if(farm.getName().equals(args[0])){
 							if(farm.getOwners().contains(player.getUniqueId())){
 								switch(args[1]){
-								case "setname":
+								case "setname"://FIXME
 									if(sender.hasPermission("autofarm.commands.user.setname")){
 										if(args.length == 3){
 											farm.setName(args[2]);
+											farm.getSign().setLine(1, farm.getName());
+											farm.getSign().update(true);
 											sender.sendMessage(ChatColor.GREEN+"Farm name changed");
 											return true;
 										}
@@ -49,7 +51,7 @@ public class GeneralInfoCommand implements CommandExecutor
 										return true;
 									}
 									break;
-								case "addowner":
+								case "addowner"://FIXME
 									if(sender.hasPermission("autofarm.commands.user.addowner")){
 										if(args.length == 3){
 											for(OfflinePlayer offPlayer : Bukkit.getOfflinePlayers()){
@@ -71,13 +73,15 @@ public class GeneralInfoCommand implements CommandExecutor
 										return true;
 									}
 									break;
-								case "upgrade":
+								case "upgrade"://FIXME
 									if(sender.hasPermission("autofarm.commands.user.upgrade")){
 										if(farm.getLevel() < Farm.getMAX_LEVEL()){
-											if(Bukkit.getWorld(Bukkit.getWorlds().get(0).getUID()).getBlockAt(farm.getFarmLocation().getBlockX(),
-													farm.getFarmLocation().getBlockY()-1,
-													farm.getFarmLocation().getBlockZ()).getType().equals(Material.getMaterial(mainClass.config.getString("FarmUpgardes."+String.valueOf(farm.getLevel()+1))))){
+											if(Bukkit.getWorld(Bukkit.getWorlds().get(0).getUID()).getBlockAt(farm.getChestLocation()[0],
+													farm.getChestLocation()[1]-1,
+													farm.getChestLocation()[2]).getType().equals(Material.getMaterial(mainClass.config.getString("FarmUpgardes."+String.valueOf(farm.getLevel()+1))))){
 												farm.setLevel(farm.getLevel()+1);
+												sender.sendMessage(ChatColor.GREEN+"Farm upgraded to level: "+farm.getLevel());
+												return true;
 											}
 											sender.sendMessage(ChatColor.RED+"You need an ["+mainClass.config.getString("FarmUpgardes."+String.valueOf(farm.getLevel()+1))+"] block under the chest to upgrade the farm");
 											return true;
@@ -91,7 +95,7 @@ public class GeneralInfoCommand implements CommandExecutor
 										for(UUID uuid : farm.getOwners()){
 											mainClass.playerConfig.set(uuid.toString()+".TotalFarms", mainClass.playerConfig.getInt(uuid.toString()+".TotalFarms")-1);
 										}
-										new File(mainClass.getDataFolder()+"Serialized Farms", farm.getName()+".farm.ser").delete();
+										new File(mainClass.getDataFolder()+"Serialized Farms", farm.getUuid().toString()+".farm.ser").delete();
 										mainClass.farmList.remove(farm);
 										sender.sendMessage(ChatColor.GREEN+"Farm deleted");
 										return true;
@@ -105,6 +109,9 @@ public class GeneralInfoCommand implements CommandExecutor
 										return true;
 									}
 									break;
+								default:
+									sender.sendMessage(ChatColor.RED+"That is not a valid command");
+									return true;
 								}
 							}
 							sender.sendMessage(ChatColor.RED+"You are not an owner of this farm");
